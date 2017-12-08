@@ -3,24 +3,32 @@
 
 class ProgramsNode(object):
 
-    def __init__(self, name, number, children=[]):
+    def __init__(self, name, weight, children=[]):
         self.name = name
-        self.number = number
+        self.weight = weight
         self.children = children
-        self.is_child_of = []
+        self.parents = []
 
-    def children(self):
+    def get_number_of_children(self):
         return len(self.children)
+
+    def get_children_tower_size(self):
+        return [children.tower_size() for children in self.children]
 
     def replace_name_by_element(self, element):
         index = self.children.index(element.name)
-        element.is_child_of.append(self)
+        element.parents.append(self)
         self.children[index] = element
+
+    def tower_size(self):
+        return self.weight + sum([
+            node.tower_size() for node in self.children
+        ])
 
     def __str__(self):
         return '{} ({}) - {}'.format(
             self.name,
-            self.number,
+            self.weight,
             [o.name for o in self.children]
         )
 
@@ -41,8 +49,8 @@ class Puzzle(object):
             else:
                 data = splited_line[0]
                 children = []
-            program_name, program_number = data.strip().split(' ')
-            program_number = program_number[1:-1]
+            program_name, program_weight= data.strip().split(' ')
+            program_weight = int(program_weight[1:-1])
 
             if children:
                 children_names = list(
@@ -51,7 +59,7 @@ class Puzzle(object):
                 children_names = []
             program_data = {
                 'program_name': program_name,
-                'program_number': program_number,
+                'program_weight': program_weight,
                 'children_names':  children_names,
             }
             result[program_data['program_name']] = program_data
@@ -62,7 +70,7 @@ class Puzzle(object):
         node_elements = {}
         for data_node in nodes.values():
             node = ProgramsNode(name=data_node['program_name'],
-                                number=data_node['program_number'],
+                                weight=data_node['program_weight'],
                                 children=data_node['children_names'], )
             node_elements[node.name] = node
 
@@ -70,7 +78,7 @@ class Puzzle(object):
             for children_name in node_element.children:
                 children = node_elements.get(children_name)
                 node_element.replace_name_by_element(children)
-        return node_elements.values()
+        return list(node_elements.values())
 
 
 if __name__ == '__main__':
@@ -81,5 +89,8 @@ if __name__ == '__main__':
 
     nodes_list = Puzzle().build_nodes(raw_input)
     nodes_tree = Puzzle().build_tree(nodes_list)
-    no_childrens = [node for node in nodes_tree if not len(node.is_child_of)]
-    print([n.name for n in no_childrens])
+    parent_nodes = [node for node in nodes_tree if not len(node.parents)]
+    if parent_nodes:
+        parent = parent_nodes[0]
+
+    print(parent.weight)

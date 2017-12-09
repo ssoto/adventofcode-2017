@@ -1,7 +1,5 @@
 #!/usr/env/bin python
 
-import sys
-sys.setrecursionlimit(100000)
 
 class Puzzle(object):
 
@@ -52,10 +50,9 @@ class Puzzle(object):
 
 
 def simple_solution():
-    nesting_score = 0
-    curr_nesting = 0
+    nesting_score = curr_nesting = garbage_count = 0
     in_garbage = False
-    garbage_count = 0
+
     with open('input.txt') as f:
         while True:
             char = f.read(1)

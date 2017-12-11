@@ -27,7 +27,6 @@ def count_movements(movements):
     x = a
     y = b
     max_distance = -10000000
-    distance = 0
     for m in movements:
         x, y = new_coordinates(x, y, m)
         distance = distance_in_grid(a, b, x, y)

@@ -2,7 +2,8 @@
 
 
 def process_programs(programs):
-    pass
+
+    return programs
 
 
 if __name__ == '__main__':
@@ -10,23 +11,16 @@ if __name__ == '__main__':
         content = fd.readlines()
 
     def build_program(line):
-        id, programs = line.split('<->')
+        id, programs = line.strip().split('<->')
         programs = [int(p) for p in programs.strip().split(',')]
-        return {
-            'id': int(id),
-            'programs': programs
-        }
+        return (id, programs)
 
-    programs = [
-        build_program(program)
-        for program in content
-    ]
-    print(programs[0])
-    processed = process_programs(programs)
+    programs = dict()
+    for line in content:
+        id, p = build_program(line)
+        programs[id] = p
 
-    result = sum([
-        program
-        for program in programs
-        if 0 in program['programs']
-    ])
-    print('There are {} programs of 0'.format(result))
+    programs_completed = process_programs(programs)
+
+    result = [k for k, v in programs_completed.items() if 0 in v]
+    print('There are {} programs of 0'.format(len(result)))

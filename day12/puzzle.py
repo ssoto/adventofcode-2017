@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
-
 def process_programs(programs):
-
-    return programs
+    result = {}
+    for prog, related in programs.items():
+        for prog_related in related:
+            new_related = set(related).union(set(programs[prog_related]))
+            result[prog] = new_related
+    return result
 
 
 if __name__ == '__main__':
@@ -12,7 +15,8 @@ if __name__ == '__main__':
 
     def build_program(line):
         id, programs = line.strip().split('<->')
-        programs = [int(p) for p in programs.strip().split(',')]
+        id = int(id)
+        programs = set([int(p) for p in programs.strip().split(',')])
         return (id, programs)
 
     programs = dict()
